@@ -170,7 +170,7 @@ $ umount /media/user/root
 
 Step 2: Hook up your cable.
 
-![TTY Connector_bb](/Users/alexanderclarke/Documents/QVLx/TTY Connector_bb.png)
+![TTY Connector_bb](images/TTY Connector_bb.png)
 
 Step 3: Download a serial terminal program. For this example, we will use `screen`.
 
