@@ -1,4 +1,4 @@
-# 2 - Network Booting the Pi with U-boot
+# 2 - TFTP
 
 To facilitate the development process, we are going to network boot our Pi over TFTP. This means that once we have the pi set up, we can remotely load any other files we need from our host machine. No more swapping the SD card between machines after every change! But what if we can to change the U-Boot script? To solve this issue, we will use two boot scripts, the first of which will just load and run the second one. This allows us to keep our second script on the TFTP server and modify it at will.
 
@@ -6,15 +6,14 @@ To facilitate the development process, we are going to network boot our Pi over 
 
 Step 1: Find the host's IP address. The Pi's address will not be set so you can make one up, just make sure that the subnet is the same and the address is not already being used by something else.
 
-Step 2: Create the source file.
+Step 2: Create the file `/media/user/boot/boot.source` containing:
 
-```bash
-$ cd /media/user/boot/
-$ echo 'echo -- Running boot.scr --
+```
+echo -- Running boot.scr --
 setenv ipaddr <Pi's IP>
 setenv serverip <Host's IP>
 tftpb 0xC00000 boot2.scr
-source 0xC00000' > boot.source
+source 0xC00000
 ```
 
 Step 3: Use the boot-tools to compile our boot code.
@@ -48,11 +47,11 @@ Step 3: You should now have a directory under `/srv/tftp` that stores any of the
 
 ## 2.3 Creating secondary boot script
 
-Step 1: Create the source file.
+Step 1: Create the file `/srv/tftp/boot2.source` containing:
 
-```bash
-$ cd /srv/tftp/
-$ echo 'echo -- Running boot.scr --' > boot2.source
+```
+echo -- Running boot.scr --
+setenv autostart no
 ```
 
 Step 2: Use the boot-tools to compile our boot code.
