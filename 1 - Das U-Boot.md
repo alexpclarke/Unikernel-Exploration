@@ -10,7 +10,7 @@ Before we get started putting anything onto our Pi, we will need to be able to c
 
 Step 1: Hook up your cable.
 
-![TTY Connector_bb](file:///Users/alexanderclarke/dev/Unikernel-Exploration/images/TTY%20Connector_bb.png?lastModify=1627662875)
+![TTY Connector_bb](images/TTY%20Connector_bb.png)
 
 Step 2: Download a serial terminal program. For this example, we will use `screen`. For more information on how to use screen, click [here](https://linuxize.com/post/how-to-use-linux-screen/).
 
