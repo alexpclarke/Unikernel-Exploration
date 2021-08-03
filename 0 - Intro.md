@@ -20,7 +20,7 @@ A Unikernel is a "specialised, single-address-space machine image constructed by
 
 ## 0.3 - Application
 
-![Xen Diagram](images/Xen Diagram.png)
+![Xen Diagram](images/Xen%20Diagram.png)
 
 In order to explore these concepts and technologies, I have been tasked with creating a demo on the Raspberry Pi 4b. The Raspberry Pi was chosen, not only for its capabilities, but also for its popularity. The Pi has quickly become one of the defacto boards for cheap home experimentation and I believe that it is the most accessible platform for most people to work with. When going into this project, I was mostly unfamiliar with Xen, Unikernels, Arm architecture, and Linux but I have tried to highlight all of the key components that are going into our final demo and show you how to build them for yourself.
 
