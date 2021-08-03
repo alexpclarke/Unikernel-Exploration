@@ -1,6 +1,8 @@
 # 3 - Xen and Dom0
 
-To run Xen as our hypervisor, we will need to have four files: the Xen binary; the Dom0 kernel; the Dom0 ramdisk; and the device tree blob. Once we have all of these files, we will use the imagebuilder tool to create a U-Boot script.	
+To run Xen as our hypervisor, we will need to have four files: the Xen binary; the Dom0 kernel; the Dom0 ramdisk; and the device tree blob. Once we have all of these files, we will use the imagebuilder tool to create a U-Boot script.
+
+I initially wanted to use Yocto Poky to simplify this process but as of July 2021, the meta-virtualization layers provided a significantly outdated version of Xen which did not include the Raspberry Pi 4 support that was added in version 4.14. If/when this gets updated, it will provide a much simpler means of building Xen and Dom0.
 
 ## 3.1: Building the Xen binary
 
@@ -21,7 +23,7 @@ $ cd xen
 Step 3: Make Xen.
 
 ```bash
-$ ./configure --host=aarch64-linux-gnu
+$ ./configure --host=aarch64-none-linux-gnu --with-xenstored=xenstored --enable-systemd
 $ make dist-xen XEN_TARGET_ARCH=arm64
 ```
 
@@ -62,8 +64,8 @@ $ make O=build-arm64 ARCH=arm64 CXXFLAGS="-march=armv8-a -mtune=cortex-a72" CFLA
 Step 5: Copy the files to our TFTP directory.
 
 ```bash
-$ cp arch/arm64/boot/Image /srv/tftp/Image-dom0
-$ cp arch/arm64/boot/dts/bcm2711-rpi-4-b.dtb /srv/tftp/
+$ cp ./build-arm64/arch/arm64/boot/Image /srv/tftp/Image-dom0
+$ cp ./build-arm64/arch/arm64/boot/dts/broadcom/bcm2711-rpi-4-b.dtb /srv/tftp/
 ```
 
 ## 3.3: Build ramdisk
@@ -74,42 +76,50 @@ Step 1: Download necessary packages.
 $ sudo apt-get install debootstrap qemu
 ```
 
-Step 2: Create and mount our image file.
+Step 2: Create, format, and mount our image file. (`-o loop` will allow us to mount a file as though it were a block device)
 
 ```bash
 $ cd ~
-$ dd if=/dev/zero bs=1M count=1024 of=ramdisk.img
+$ dd if=/dev/zero bs=1M count=2048 of=ramdisk.img
 $ mkfs.ext4 ramdisk.img
-$ sudo mount -o loop -t ext4 ramdisk.img /mnt
+$ sudo mount -o loop -t ext4 ramdisk.img /mnt/ramdisk
 ```
 
 Step 3: Populate the root file system by running the first stage of debootstrap.
 
 ```bash
-$ sudo debootstrap --foreign --arch arm64 focal /mnt http://ports.ubuntu.com/
+$ sudo debootstrap --foreign --arch arm64 focal /mnt/ramdisk http://ports.ubuntu.com/
 ```
 
 Step 4: Run the second stage of debootstrap.
 
 ```bash
-$ sudo cp /usr/bin/qemu-aarch64-static /mnt/usr/bin
-$ sudo chroot /mnt qemu-aarch64-static /bin/bash
+$ sudo cp /usr/bin/qemu-aarch64-static /mnt/ramdisk/usr/bin
+$ sudo chroot /mnt/ramdisk qemu-aarch64-static /bin/bash
 $ ./debootstrap/debootstrap --second-stage
+$ exit
 ```
 
-Step 5: Add the Xen tools.
+Step 5: Install the kernel modules into the filesystem.
 
 ```bash
-$ echo 'deb http://ports.ubuntu.com focal universe' >> /etc/apt/sources.list
+$ cd ~/linux
+$ sudo make O=build-arm64 ARCH=arm64 INSTALL_MOD_PATH=/aarch64-chroot modules_install
+```
+
+Step 6: Add the Xen tools.
+
+```bash
+$ echo 'deb http://ports.ubuntu.com focal universe' >> /mnt/ramdisk/etc/apt/sources.list
 $ apt-get update
 $ apt-get install xen-system-arm64
 $ exit
 ```
 
-Step 6: Gather and compress our ramdisk
+Step 7: Gather and compress our ramdisk
 
 ```bash
-$ sudo find /mnt -print |sudo cpio -H newc -o |gzip -9 > /srv/tftp/dom0-ramdisk.cpio.gz
+$ sudo find /mnt/ramdisk -print |sudo cpio -H newc -o |gzip -9 > /srv/tftp/dom0-ramdisk.cpio.gz
 ```
 
 ## 3.4: Imagebuilder
@@ -119,9 +129,10 @@ Step 1: Clone the Xen ImageBuilder tool
 ```bash
 $ cd ~
 $ git clone --depth 1 https://gitlab.com/ViryaOS/imagebuilder.git
+$ cd imagebuildere
 ```
 
-Step 2: modify /config
+Step 2: modify `config.txt`.
 
 ```
 MEMORY_START="0x0"
@@ -150,4 +161,5 @@ $ bash ./scripts/uboot-script-gen -c ./config -d /srv/tftp -t tftp -o boot2
 - [Mainline Linux Kernel Configs](https://wiki.xenproject.org/wiki/Mainline_Linux_Kernel_Configs)
 - https://xenbits.xen.org/docs/unstable/misc/arm/device-tree/booting.txt
 - https://xenbits.xenproject.org/docs/unstable/features/dom0less.html
-- http://xenbits.xen.org/docs/unstable/misc/xen-command-line.html#dom0_max_vcpus
+- http://xenbits.xen.org/docs/unstable/misc/xen-command-line.html
+

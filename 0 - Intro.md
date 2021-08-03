@@ -19,3 +19,8 @@ So why is it that to run something such as a headless web server, we are install
 A Unikernel is a "specialised, single-address-space machine image constructed by using library operating systems." This means that instead of having the seperation of kernel and user space, we can hand pick which libraries we want and build our application directly into the kernel.
 
 ## 0.3 - Application
+
+![Xen Diagram](/Users/alexanderclarke/dev/Unikernel-Exploration/images/Xen Diagram.png)
+
+In order to explore these concepts and technologies, I have been tasked with creating a demo on the Raspberry Pi 4b. The Raspberry Pi was chosen, not only for its capabilities, but also for its popularity. The Pi has quickly become one of the defacto boards for cheap home experimentation and I believe that it is the most accessible platform for most people to work with. When going into this project, I was mostly unfamiliar with Xen, Unikernels, Arm architecture, and Linux but I have tried to highlight all of the key components that are going into our final demo and show you how to build them for yourself.
+

@@ -2,7 +2,7 @@
 
 The first step to getting our Pi set up is setting up our our bootloader. New to the Pi 4b, this board comes with a 512KB SPI-attached EEPROM which is used as its bootloader. While this bootloader works well for simple applications, it is closed source and lacks certain functionality that we will need to run our system. We will use this built-in bootloader as our primary boot loader and load U-Boot from our SD card, using that as our secondary bootloader.
 
-U-Boot is a powerful open-source boot loader designed for embeded solutions with support for various architectures, including AARCH64.
+U-Boot is a powerful open-source boot loader designed for embeded solutions with support for various architectures, including AARCH64. You can read more about it [here](https://www.denx.de/wiki/U-Boot).
 
 ## 1.1 - Connecting over UART
 
@@ -20,7 +20,7 @@ $ sudp apt-get install screen
 
 ## 1.2 - Updating EEPROM bootloader
 
-First, we want to make sure that our EEPROM bootloader is up to date.
+Now that we can see output from our pi, we want to make sure that our EEPROM bootloader is up to date.
 
 Step 1: Go to [this website](https://www.raspberrypi.org/software/) and download the appropriate version of the Raspberry Pi Imager.
 
@@ -59,7 +59,7 @@ Step 3: Export it to the local environment so that it can be used later. (Make s
 $ export CROSS_COMPILE="$(pwd)/gcc-arm-10.2-2020.11-x86_64-aarch64-none-linux-gnu/bin/aarch64-none-linux-gnu-"
 ```
 
-## 1.4 - Formatting your SD card
+## 1.4 - Formatting the SD card
 
 Next, we need to format our SD card so that we can store our boot files onto it.
 
@@ -113,14 +113,14 @@ $ sudo fatlabel /dev/mmcblk0p1 boot
 $ sudo e2label /dev/mmcblk0p2 root
 ```
 
-Step 5: Mount the drives back.
+Step 5: Mount the drives back. (Replace "user" with whatever )
 
 ```bash
 $ sudo mkdir -p /media/user/boot && sudo mount /dev/mmcblk0p1 /media/user/boot
 $ sudo mkdir -p /media/user/root && sudo mount /dev/mmcblk0p2 /media/user/root
 ```
 
-## 1.4 - Getting firmware boot files
+## 1.5 - Firmware boot files
 
 There are certain files that the primary boot loader requires to load our binaries. `start4.elf` is where the firmware is contained, `fixup4.dat` is a linker file that is paired with the firmware and `bcm2711-rpi-4-b.dts` is the device tree blob that describes the hardware of the Pi. We will also create our own `config.txt` file which will contain options for the firmware bootloader.
 
@@ -156,17 +156,17 @@ enable_uart=1
 init_uart_baud=115200
 ```
 
-## 1.5 - Building U-Boot
+## 1.6 - Building U-Boot
 
 Our next step is to get our U-Boot binary. You could download a pre-built one, but it is easy to build it yourself so we will go through the steps of doing so.
 
-Step 1: Make sure you have the cross-compiler installed from section 1.1.
+Step 1: Make sure you have the cross-compiler installed from section 1.3.
 
 ```bash
 $ printenv CROSS_COMPILE
 ```
 
-Step 2: Clone U-Boot source.
+Step 2: Clone U-Boot source. (Adding `--depth 1` to our git command causes it to only download the specified branch. If no branch is specified, the master is used.)
 
 ```bash
 $ cd ~
@@ -180,13 +180,13 @@ Step 3: Set config to Raspberry Pi 4.
 $ make rpi_4_defconfig
 ```
 
-Step 4: Build u-boot binary.
+Step 4: Build U-Boot binary.
 
 ```bash
 $ make
 ```
 
-Step 5: Copy over u-boot binary.
+Step 5: Copy over u-boot binary. ()
 
 ```bash
 $ cp ./u-boot.bin /media/user/boot/
@@ -203,10 +203,6 @@ Step 7: Run screen and turn on your Pi.
 
 ```bash
 $ sudo screen /dev/ttyUSB0 115200
-```
-
-```
-
 ```
 
 ## Sources
