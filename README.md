@@ -26,7 +26,8 @@
   - 4.2 - Set up PCI passthrough
   - 4.3 - Re-run imagebuilder
 - [5 - Unikernel](5---Unikernel.md)
-  - 5.1 - Unikraft
-  - 5.2 - MirageOS
-  - 5.3 - Bare Metal C
-  - 5.4 - Bare Metal Rust
+  - 5.1 - Rumprun
+  - 5.2 - Unikraft
+  - 5.3 - MirageOS
+  - 5.4 - Bare Metal C
+  - 5.5 - Bare Metal Rust
