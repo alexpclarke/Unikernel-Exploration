@@ -13,14 +13,14 @@
   - 1.5 - Firmware boot files
   - 1.6 - Building U-Boot
 - [2 - TFTP](2%20-%20TFTP.md)
-  - 2.1: Creating initial boot script
-  - 2.2 Set up TFTP server on your host
-  - 2.3 Creating secondary boot script
+  - 2.1 - Creating initial boot script
+  - 2.2 - Set up TFTP server on your host
+  - 2.3 - Creating secondary boot script
 - [3 - Xen and Dom0](3%20-%20Xen%20and%20Dom0.md)
-  - 3.1: Building the Xen binary
-  - 3.2: Building the Dom0 Kernel
-  - 3.3: Build ramdisk
-  - 3.4: Imagebuilder
+  - 3.1 - Building the Xen binary
+  - 3.2 - Building the Dom0 Kernel
+  - 3.3 - Building the Dom0 ramdisk
+  - 3.4 - Imagebuilder
 - [4 - Driver Dom](4%20-%20Driver%20Dom.md)
   - 4.1 - Creating a VM
   - 4.2 - Set up PCI passthrough
